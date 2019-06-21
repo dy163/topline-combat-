@@ -8,24 +8,15 @@ export default new Router({
     {
       name: 'home',
       path: '/',
+      // 在整个项目中，模块路径中的 @ 表示的是 src 目录
+      // 无论你当前模块在哪里，@ 都可以直接定位到 src
+      // 加载一个目录可以默认加载它的 index.js、index.vue、index.json。。。
       component: () => import('@/views/home')
     },
     {
       name: 'login',
       path: '/login',
-      component: () => import('./views/login')
-    }, // 用户登陆
-    {
-      component: () => import('./views/article')
-    }, // 文章管理
-    {
-      component: () => import('./views/publish')
-    }, // 头条发布
-    {
-      component: () => import('./views/publish/:articleId')
-    }, // 修改头条发布
-    {
-      component: () => import('./views/comment')
+      component: () => import('@/views/login')
     }
   ]
 })
