@@ -112,7 +112,8 @@ export default {
 <style lang="less" scoped>
 .login-wrap {
   height: 100%;
-  background-color: #9bbbee;
+  // background-color: #9bbbee;
+  background-image: url(./一封信.jpg);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -127,7 +128,7 @@ export default {
   }
   .form-wrap {
     width: 400px;
-    background-color: #fff;
+    background-color: #c183fb;
     padding: 20px;
     border-radius: 10px;
     .btn-login {
