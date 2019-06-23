@@ -5,11 +5,11 @@
       <div class="login-head">
         <img src="./logo_index.png" alt="黑马头条号">
       </div>
-      <el-form ref="form" :model="form" class="form-content">
-        <el-form-item>
+      <el-form ref="form" :rules="rules" :model="form" class="form-content">
+        <el-form-item prop="mobile">
           <el-input v-model="form.mobile" placeholder="手机号"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="code">
           <!-- el-col 栅格布局，一共 24 列，:span 用来指定占用的大小，:offset 用来指定偏移量 -->
           <el-col :span="14">
             <el-input v-model="form.code" placeholder="验证码"></el-input>
@@ -18,6 +18,10 @@
             <el-button @click="handleSendCode">获取验证码</el-button>
             <!-- <el-button @click="handleSendCode">获取验证码</el-button> -->
           </el-col>
+        </el-form-item>
+        <el-form-item prop="agree">
+          <el-checkbox class="agree-checkbox" v-model="form.agree"></el-checkbox>
+          <span class="agree-text">我已阅读并同意<a href="#">用户协议</a>和<a href="#">隐私条款</a></span>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" class="btn-login" @click="handleLogin">登陆</el-button>
@@ -37,13 +41,37 @@ export default {
     return {
       form: {
         mobile: '',
-        code: ''
+        code: '',
+        agree: ''
+      },
+      rules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          // { len: 11, message: '长度必须为11位', trigger: 'blur' }
+          { pattern: /^\d{11}$/, message: '长度必须为11位', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          // { len: 6, message: '长度必须为6位', trigger: 'blur' }
+          { pattern: /^\d{6}$/, message: '请输入有效的验证码', trigger: 'blur' }
+
+        ]
       }
     }
   },
 
   methods: {
     handleLogin () {
+      this.$refs['form'].validate(valid => {
+        if (!valid) {
+          return
+        }
+        // 表单验证通过
+        this.submitLogin()
+      })
+    },
+
+    submitLogin () {
       axios({
         method: 'POST',
         url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
@@ -63,6 +91,10 @@ export default {
     },
 
     handleSendCode () {
+      this.showGeetest()
+    },
+
+    showGeetest () {
       const { mobile } = this.form
       axios({
         method: 'GET',
