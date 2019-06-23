@@ -91,7 +91,12 @@ export default {
     },
 
     handleSendCode () {
-      this.showGeetest()
+      this.$refs['form'].validateField('moblie', errorMessage => {
+        if (errorMessage.trim().length > 0) {
+          return
+        }
+        this.showGeetest()
+      })
     },
 
     showGeetest () {
