@@ -15,8 +15,10 @@
             <el-input v-model="form.code" placeholder="验证码"></el-input>
           </el-col>
           <el-col :offset="1" :span="9">
-            <el-button @click="handleSendCode">获取验证码</el-button>
-            <!-- <el-button @click="handleSendCode">获取验证码</el-button> -->
+            <el-button
+             @click="handleSendCode"
+             :disabled="!!codeTimer"
+             >{{ codeTimer ? `剩余${codeTimeSeconds}秒` : '获取验证码' }}</el-button>
           </el-col>
         </el-form-item>
         <el-form-item prop="agree">
@@ -33,7 +35,10 @@
 
 <script>
 import axios from 'axios'
+// 引入第三方的服务jt.js这个服务没有提供前端的npm包 需要手动下载,之后需要进行设置忽略eslint的校验(.eslintignore)的配置文件
 import '@/vendor/gt.js'
+
+const initCodeTimeSeconds = 60
 
 export default {
   name: 'AppLogin',
@@ -55,8 +60,14 @@ export default {
           // { len: 6, message: '长度必须为6位', trigger: 'blur' }
           { pattern: /^\d{6}$/, message: '请输入有效的验证码', trigger: 'blur' }
 
+        ],
+        agree: [
+          { required: true, message: '请同意用户协议' },
+          { pattern: /true/, message: '请同意用户协议' }
         ]
-      }
+      },
+      codeTimer: null, // 倒计时定时器
+      codeTimeSeconds: initCodeTimeSeconds// 定时器事件
     }
   },
 
@@ -78,6 +89,8 @@ export default {
         data: this.form
       }).then(res => {
         console.log(res.data)
+        const userInfo = res.data.data
+        window.localStorage.setItem('user_info', JSON.stringify(userInfo))
         this.$message({
           message: '登录成功',
           type: 'success'
@@ -91,10 +104,13 @@ export default {
     },
 
     handleSendCode () {
-      this.$refs['form'].validateField('moblie', errorMessage => {
+      // 验证手机号是否有效validateField 对单个字段的验证
+      this.$refs['form'].validateField('mobile', errorMessage => {
         if (errorMessage.trim().length > 0) {
+          // trim是input的特性,判断input的空格
           return
         }
+        // 调这个函数表示在点击登陆按钮的时候需要在一次验证,这是对单个表单的进行验证
         this.showGeetest()
       })
     },
@@ -112,11 +128,11 @@ export default {
           challenge: data.challenge,
           offline: !data.success,
           new_captcha: data.new_captcha,
-          product: 'bind' }, function (captchaObj) {
-          captchaObj.onReady(function () {
+          product: 'bind' }, captchaObj => {
+          captchaObj.onReady(() => {
             // 验证码ready之后才能调用verify方法显示验证码
             captchaObj.verify() // 弹出验证码内容框
-          }).onSuccess(function () {
+          }).onSuccess(() => {
             // your code
             const {
               geetest_challenge: challenge,
@@ -133,6 +149,7 @@ export default {
               }
             }).then(res => {
               console.log(res.data)
+              this.codeCountDown()
             })
           }).onError(function () {
             // you code
@@ -141,6 +158,21 @@ export default {
           // capchaObj.verify
         })
       })
+    },
+
+    // 定时器函数
+    codeCountDown () {
+      this.codeTimer = window.setInterval(() => {
+        this.codeTimeSeconds--
+        if (this.codeTimeSeconds <= 0) {
+          // 清除定时器
+          window.clearInterval(this.codeTimer)
+          // 定时器回到初始状态
+          this.codeTimeSeconds = initCodeTimeSeconds
+          // 回到初始重新为空
+          this.codeTimer = null
+        }
+      }, 1000)
     }
   }
 }
