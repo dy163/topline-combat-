@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     { // layout 显示app路由c出口
       // name: 'layout',  使用 js 命名的路由导航不会血染默认子路由
@@ -33,3 +33,37 @@ export default new Router({
     }
   ]
 })
+
+/*
+  beforeEach 全局守卫
+  当你访问页面的时候会首先进入这
+  * to 要去哪里的相关数据
+  * from 来自哪里的相关知识数据
+  * next 允许通过的方法
+*/
+router.beforeEach((to, from, next) => {
+  // console.log('beforeEach')
+  // next()
+  // console.log(to) 当前页面的信息
+  const userInfo = window.localStorage.getItem('user_info')
+  if (to.path !== '/login') {
+    if (!userInfo) {
+      next({ path: '/login' })
+    } else {
+      // 登陆了允许通过
+      next()
+    }
+  } else {
+    // 没有登陆,允许通过
+    if (!userInfo) {
+      next()
+    } else {
+      // 登陆了,不允许通过
+      // next(false)
+      window.location.href = '/#/'
+      window.location.reload()
+    }
+  }
+})
+
+export default router
