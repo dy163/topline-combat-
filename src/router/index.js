@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import nprogress from 'nprogress'
 
 Vue.use(Router)
 
@@ -42,6 +43,8 @@ const router = new Router({
   * next 允许通过的方法
 */
 router.beforeEach((to, from, next) => {
+  // 路由导航前,开启进度条
+  nprogress.start()
   // console.log('beforeEach')
   // next()
   // console.log(to) 当前页面的信息
@@ -64,6 +67,11 @@ router.beforeEach((to, from, next) => {
       window.location.reload()
     }
   }
+})
+
+router.afterEach((to, from) => {
+  // 路由导航完成,结束进度条
+  nprogress.done()
 })
 
 export default router

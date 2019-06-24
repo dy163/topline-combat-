@@ -7,6 +7,7 @@ import router from './router'
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import '../node_modules/nprogress/nprogress.css'
 
 // 引入公共样式,最好在在element样式文件之后,可以自定义修改element内置样式
 import './styles/index.less'
