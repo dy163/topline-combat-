@@ -16,18 +16,14 @@
           </el-col>
           <el-col :offset="1" :span="9">
             <el-button
-              @click="handleSendCode"
-              :disabled="!!codeTimer"
-            >{{ codeTimer ? `剩余${codeTimeSeconds}秒` : '获取验证码' }}</el-button>
+             @click="handleSendCode"
+             :disabled="!!codeTimer"
+             >{{ codeTimer ? `剩余${codeTimeSeconds}秒` : '获取验证码' }}</el-button>
           </el-col>
         </el-form-item>
         <el-form-item prop="agree">
           <el-checkbox class="agree-checkbox" v-model="form.agree"></el-checkbox>
-          <span class="agree-text">
-            我已阅读并同意
-            <a href="#">用户协议</a>和
-            <a href="#">隐私条款</a>
-          </span>
+          <span class="agree-text">我已阅读并同意<a href="#">用户协议</a>和<a href="#">隐私条款</a></span>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" class="btn-login" @click="handleLogin">登陆</el-button>
@@ -38,11 +34,10 @@
 </template>
 
 <script>
-// import axios from "axios";
+import axios from 'axios'
 // 引入第三方的服务jt.js这个服务没有提供前端的npm包 需要手动下载,之后需要进行设置忽略eslint的校验(.eslintignore)的配置文件
 import '@/vendor/gt.js'
 import { saveUser } from '@/utils/auth.js' // 按需加载,,模块中就是他这个成员
-import initGeetest from '@/utils/init-geetest'
 const initCodeTimeSeconds = 60
 
 export default {
@@ -64,6 +59,7 @@ export default {
           { required: true, message: '请输入验证码', trigger: 'blur' },
           // { len: 6, message: '长度必须为6位', trigger: 'blur' }
           { pattern: /^\d{6}$/, message: '请输入有效的验证码', trigger: 'blur' }
+
         ],
         agree: [
           { required: true, message: '请同意用户协议' },
@@ -71,7 +67,7 @@ export default {
         ]
       },
       codeTimer: null, // 倒计时定时器
-      codeTimeSeconds: initCodeTimeSeconds // 定时器事件
+      codeTimeSeconds: initCodeTimeSeconds// 定时器事件
     }
   },
 
@@ -86,13 +82,12 @@ export default {
       })
     },
 
-    async submitLogin () {
-      try {
-        const res = await this.$http({
-          method: 'POST',
-          url: '/authorizations',
-          data: this.form
-        })
+    submitLogin () {
+      axios({
+        method: 'POST',
+        url: 'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+        data: this.form
+      }).then(res => {
         // console.log(res.data)
         const userInfo = res.data.data
 
@@ -106,9 +101,9 @@ export default {
         this.$router.push({
           name: 'home'
         })
-      } catch (err) {
+      }).catch((e) => {
         this.$message.error('登录失败,手机号或验证码错误')
-      }
+      })
     },
 
     handleSendCode () {
@@ -123,50 +118,49 @@ export default {
       })
     },
 
-    async showGeetest () {
+    showGeetest () {
       const { mobile } = this.form
-      const res = await this.$http({
+      axios({
         method: 'GET',
-        url: `/captchas/${mobile}`
-      })
-      // console.log(res.data)
-      const { data } = res.data
-
-      const captchaObj = await initGeetest(
-        {
+        url: `http://ttapi.research.itcast.cn/mp/v1_0/captchas/${mobile}`
+      }).then(res => {
+        // console.log(res.data)
+        const { data } = res.data
+        window.initGeetest({
           gt: data.gt,
           challenge: data.challenge,
           offline: !data.success,
           new_captcha: data.new_captcha,
-          product: 'bind'
-        })
-      captchaObj.onReady(() => {
-        // 验证码ready之后才能调用verify方法显示验证码
-        captchaObj.verify() // 弹出验证码内容框
-      })
-        .onSuccess(async () => {
-          // your code
-          const {
-            geetest_challenge: challenge,
-            geetest_seccode: seccode,
-            geetest_validate: validate
-          } = captchaObj.getValidate()
-          // 发送短信
-          await this.$http({
-            method: 'GET',
-            url: `/sms/codes/${mobile}`,
-            params: {
-              challenge,
-              validate,
-              seccode
-            }
+          product: 'bind' }, captchaObj => {
+          captchaObj.onReady(() => {
+            // 验证码ready之后才能调用verify方法显示验证码
+            captchaObj.verify() // 弹出验证码内容框
+          }).onSuccess(() => {
+            // your code
+            const {
+              geetest_challenge: challenge,
+              geetest_seccode: seccode,
+              geetest_validate: validate } =
+              captchaObj.getValidate()
+            axios({
+              method: 'GET',
+              url: `http://ttapi.research.itcast.cn/mp/v1_0/sms/codes/${mobile}`,
+              params: {
+                challenge,
+                validate,
+                seccode
+              }
+            }).then(res => {
+              // console.log(res.data)
+              this.codeCountDown()
+            })
+          }).onError(function () {
+            // you code
           })
-          // 开始倒计时
-          // console.log(res.data)
-          this.codeCountDown()
+          // 在这里注册"发送验证码",按钮的的点击事件,然后验证用户是否输入手机号以及手机号的格式是否正确,没有问题:
+          // capchaObj.verify
         })
-      // 在这里注册"发送验证码",按钮的的点击事件,然后验证用户是否输入手机号以及手机号的格式是否正确,没有问题:
-      // capchaObj.verify
+      })
     },
 
     // 定时器函数
@@ -198,7 +192,7 @@ export default {
   .login-head {
     display: flex;
     justify-content: center;
-    align-items: center; // 居中对齐弹性盒子的各项
+    align-items: center;   // 居中对齐弹性盒子的各项
     margin-bottom: 10px;
     img {
       width: 200px;
