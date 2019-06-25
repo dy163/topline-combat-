@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import { removeUser, getUser } from '@/utils/auth.js'
 export default {
   name: 'AppHeader',
   data () {
@@ -26,11 +27,12 @@ export default {
     }
   },
   created () {
-    this.userInfo = JSON.parse(window.localStorage.getItem('user_info'))
+    // this.userInfo = JSON.parse(window.localStorage.getItem('user_info'))
+    this.userInfo = getUser()
   },
   methods: {
     handleLayout () {
-      console.log(123)
+      // console.log(123)
       this.$confirm('确认退出?', '退出提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -38,7 +40,9 @@ export default {
       })
         .then(() => {
           // 清空本地存储中的userInfo
-          window.localStorage.removeItem('user_info')
+          // window.localStorage.removeItem('user_info')
+          removeUser()
+
           // 跳转到登录页
           this.$router.push({ name: 'login' })
 

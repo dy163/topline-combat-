@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import nprogress from 'nprogress'
+import { getUser } from '@/utils/auth.js'
 
 Vue.use(Router)
 
@@ -48,7 +49,8 @@ router.beforeEach((to, from, next) => {
   // console.log('beforeEach')
   // next()
   // console.log(to) 当前页面的信息
-  const userInfo = window.localStorage.getItem('user_info')
+  // const userInfo = window.localStorage.getItem('user_info')
+  const userInfo = getUser()
   if (to.path !== '/login') {
     if (!userInfo) {
       next({ path: '/login' })

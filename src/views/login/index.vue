@@ -37,7 +37,7 @@
 import axios from 'axios'
 // 引入第三方的服务jt.js这个服务没有提供前端的npm包 需要手动下载,之后需要进行设置忽略eslint的校验(.eslintignore)的配置文件
 import '@/vendor/gt.js'
-
+import { saveUser } from '@/utils/auth.js' // 按需加载,,模块中就是他这个成员
 const initCodeTimeSeconds = 60
 
 export default {
@@ -90,7 +90,10 @@ export default {
       }).then(res => {
         // console.log(res.data)
         const userInfo = res.data.data
-        window.localStorage.setItem('user_info', JSON.stringify(userInfo))
+
+        // window.localStorage.setItem('user_info', JSON.stringify(userInfo))
+        saveUser(userInfo) // 直接调这个方法
+
         this.$message({
           message: '登录成功',
           type: 'success'
