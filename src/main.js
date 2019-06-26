@@ -17,7 +17,8 @@ import './styles/index.less'
 
 // 配置axios 的基础路径
 // 直接请求登录的时候 直接axios({url:/.......})
-axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0'
+// axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0'
+axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0'
 Vue.use(ElementUI)
 // 所有组件都是vue实例---可以把一些需要频繁调用的组件中的成员放入到vue的实例中
 // 给原型对象扩展成员的时候最好加上一个$前缀,避免和组件中的成员名字产生冲突

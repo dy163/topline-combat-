@@ -40,7 +40,7 @@
 <script>
 // import axios from "axios";
 // 引入第三方的服务jt.js这个服务没有提供前端的npm包 需要手动下载,之后需要进行设置忽略eslint的校验(.eslintignore)的配置文件
-import '@/vendor/gt.js'
+// import '@/vendor/gt.js'
 import { saveUser } from '@/utils/auth.js' // 按需加载,,模块中就是他这个成员
 import initGeetest from '@/utils/init-geetest'
 const initCodeTimeSeconds = 60

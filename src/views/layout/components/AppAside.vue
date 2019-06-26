@@ -31,12 +31,12 @@
         <i class="iconfont icon-edit"></i>
         <span slot="title">发布</span>
       </el-menu-item>
-      <el-menu-item index="1-3">
+      <el-menu-item index="/article">
         <i class="iconfont icon-icon-articles"></i>
         <span slot="title">内容列表</span>
       </el-menu-item>
     </el-submenu>
-    <!-- <el-menu-item index="/comment">
+    <el-menu-item index="/comment">
       <i class="iconfont icon-comment"></i>
       <span slot="title">评论</span>
     </el-menu-item>
@@ -51,7 +51,7 @@
     <el-menu-item index="/account">
       <i class="iconfont icon-account"></i>
       <span slot="title">账户</span>
-    </el-menu-item> -->
+    </el-menu-item>
   </el-menu>
 </template>
 
