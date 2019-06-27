@@ -58,6 +58,10 @@ router.beforeEach((to, from, next) => {
   const userInfo = getUser()
   if (to.path !== '/login') {
     if (!userInfo) {
+      if (from.path === '/login') {
+        // 如果是来自登录页面,是不会进行页面导航的,也就不会触发后面的afterEach钩子
+        nprogress.done()
+      }
       next({ path: '/login' })
     } else {
       // 登陆了允许通过
