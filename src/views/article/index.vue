@@ -19,7 +19,8 @@
             <el-table
                 class="article-list"
                 :data="articles"
-                style="width: 100%">
+                style="width: 100%"
+                v-loading="articleLoading">
                     <el-table-column
                         label="封面"
                         width="180">
@@ -53,15 +54,25 @@
                         width="180">
                     </el-table-column>
                     <el-table-column
-                        prop="address"
-                        label="地址">
+                        label="操作">
+                        <template>
+                          <el-button size="mini" type="primary" plain>修改</el-button>
+                          <el-button size="mini" type="danger" plain>删除</el-button>
+                        </template>
                     </el-table-column>
             </el-table>
-            <!-- 分页模块 -->
+            <!-- 分页模块
+              total 用来配置总的记录数
+              page-size 用来配置每页大小 默认是10
+              分页组件会根据每页大小和总的记录数进行自动处理
+            -->
             <el-pagination
                 background
                 layout="prev, pager, next"
-                :total="1000">
+                :page-size="pageSize"
+                :total="totalCount"
+                :disabled="articleLoading"
+                @current-change="handleCurrentChange">
             </el-pagination>
         </el-card>
     </div>
@@ -97,7 +108,13 @@ export default {
           type: 'danger',
           label: '已删除'
         }
-      ]
+      ],
+      pageSize: 10, //
+      totalCount: 0, // 总数据量
+      // 当前页码
+      page: 1,
+      // loading加载效果
+      articleLoading: false
     }
   },
 
@@ -113,10 +130,24 @@ export default {
       // 当我们登录成功后,服务端会生成一个token令牌,放到用户的信息中
       const data = await this.$http({
         method: 'GET',
-        url: '/articles'
+        url: '/articles',
+        params: {
+          page: this.page, // 页码
+          per_page: this.pageSize // 每页多少
+        }
       })
       console.log(data)
       this.articles = data.results
+      this.totalCount = data.total_count
+      // 请求结束, 停止loading
+      this.articleLoading = false
+    },
+
+    handleCurrentChange (page) {
+      // console.log(page) 将数据中页码修改为当前最新的页码
+      this.page = page
+      // 改变之后重新加载页面
+      this.loadArticles()
     }
   }
 }
