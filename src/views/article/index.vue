@@ -18,16 +18,38 @@
              </div>
             <el-table
                 class="article-list"
-                :data="tableData"
+                :data="articles"
                 style="width: 100%">
                     <el-table-column
-                        prop="date"
-                        label="日期"
+                        label="封面"
+                        width="180">
+                        <template slot-scope="scope">
+                            <img
+                            width="20"
+                            v-for="item in scope.row.cover.images"
+                            :key="item"
+                            :src="item">
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="title"
+                        label="标题"
                         width="180">
                     </el-table-column>
                     <el-table-column
-                        prop="name"
-                        label="姓名"
+                        label="状态"
+                        width="180">
+                        <template slot-scope="scope">
+                            <!-- 创造一个数组 -->
+                            <el-tag
+                            :type="statTypes[scope.row.status].type">
+                            {{ statTypes[scope.row.status].label }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                        prop="pubdate"
+                        label="发布时间"
                         width="180">
                     </el-table-column>
                     <el-table-column
@@ -46,31 +68,55 @@
 </template>
 
 <script>
+
+// import {getUser} from '@/utils/auth'
+
 export default {
+  name: 'ArticleList',
   data () {
     return {
-      tableData: [
+      articles: [],
+      statTypes: [
         {
-          date: '2019-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
+          type: 'info',
+          label: '草稿'
         },
         {
-          date: '2019-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
+          type: '',
+          label: '待审核'
         },
         {
-          date: '2019-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
+          type: 'success',
+          label: '审核通过'
         },
         {
-          date: '2019-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
+          type: 'warning',
+          label: '审核失败'
+        },
+        {
+          type: 'danger',
+          label: '已删除'
         }
       ]
+    }
+  },
+
+  created () {
+    this.loadArticles()
+  },
+
+  methods: {
+    async loadArticles () {
+      // 请求开始，加载 loading
+      this.articleLoading = true
+      // 除了登录的相关接口,其他接口必须在请求头中通过 Authorization 字段提供用户的 token 令牌
+      // 当我们登录成功后,服务端会生成一个token令牌,放到用户的信息中
+      const data = await this.$http({
+        method: 'GET',
+        url: '/articles'
+      })
+      console.log(data)
+      this.articles = data.results
     }
   }
 }

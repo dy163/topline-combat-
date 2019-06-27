@@ -88,13 +88,13 @@ export default {
 
     async submitLogin () {
       try {
-        const res = await this.$http({
+        const userInfo = await this.$http({
           method: 'POST',
           url: '/authorizations',
           data: this.form
         })
         // console.log(res.data)
-        const userInfo = res.data.data
+        // const userInfo = res.data.data
 
         // window.localStorage.setItem('user_info', JSON.stringify(userInfo))
         saveUser(userInfo) // 直接调这个方法
@@ -125,12 +125,12 @@ export default {
 
     async showGeetest () {
       const { mobile } = this.form
-      const res = await this.$http({
+      const data = await this.$http({
         method: 'GET',
         url: `/captchas/${mobile}`
       })
       // console.log(res.data)
-      const { data } = res.data
+      // const { data } = res.data
 
       const captchaObj = await initGeetest(
         {
