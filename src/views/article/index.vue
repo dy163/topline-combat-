@@ -43,7 +43,10 @@
                 </el-date-picker>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="handleFilter">查询</el-button>
+                <el-button
+                type="primary"
+                @click="handleFilter"
+                :loading="articleLoading">查询</el-button>
               </el-form-item>
           </el-form>
 
@@ -51,7 +54,7 @@
         <!-- 文章列表模块 -->
         <el-card class="box-card">
             <div slot="header" class="clearfix">
-                <span>一共有xxx条数据</span>
+                <span>一共有<strong>{{ totalCount }}</strong>条数据</span>
                 <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
              </div>
             <el-table
@@ -93,9 +96,9 @@
                     </el-table-column>
                     <el-table-column
                         label="操作">
-                        <template>
-                          <el-button size="mini" type="primary" plain>修改</el-button>
-                          <el-button size="mini" type="danger" plain>删除</el-button>
+                        <template slot-scope="scope">
+                          <el-button size="mini" type="primary" plain >修改</el-button>
+                          <el-button size="mini" type="danger" plain @click="handleDelete(scope.row)">删除</el-button>
                         </template>
                     </el-table-column>
             </el-table>
@@ -103,8 +106,10 @@
               total 用来配置总的记录数
               page-size 用来配置每页大小 默认是10
               分页组件会根据每页大小和总的记录数进行自动处理
+              current-page 当前高亮的页码,需要和数据保持同步,否则会出现数据页码的改变 页码不会变
             -->
             <el-pagination
+                :current-page="page"
                 background
                 layout="prev, pager, next"
                 :page-size="pageSize"
@@ -172,7 +177,9 @@ export default {
   methods: {
     // 查询函数
     handleFilter () {
-
+      this.page = 1 // 查询从第一页开始查询
+      // 点击查询按钮,根据表单中的数据查询查询文章列表
+      this.loadArticles()
     },
     // 日期选择函数
     handleDateChange (value) {
@@ -198,12 +205,21 @@ export default {
       this.articleLoading = true
       // 除了登录的相关接口,其他接口必须在请求头中通过 Authorization 字段提供用户的 token 令牌
       // 当我们登录成功后,服务端会生成一个token令牌,放到用户的信息中
+      const filterData = {}
+      for (let key in this.filterParams) {
+        const item = this.filterParams[key]
+        // 数据中有0 参与查询运算后就是 false
+        if (item !== null && item !== undefined && item !== '') {
+          filterData[key] = item
+        }
+      }
       const data = await this.$http({
         method: 'GET',
         url: '/articles',
         params: {
           page: this.page, // 页码
-          per_page: this.pageSize // 每页多少
+          per_page: this.pageSize, // 每页多少
+          ...filterData // 将 filterData 混入到当前对象中
         }
       })
       console.log(data)
@@ -218,6 +234,34 @@ export default {
       this.page = page
       // 改变之后重新加载页面
       this.loadArticles()
+    },
+    async handleDelete (item) {
+      try {
+        await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        await this.$http({
+          method: 'DELETE',
+          url: `/articles/${item.id}`
+        })
+
+        this.$message({
+          type: 'success',
+          message: '删除成功'
+        })
+        // 删除成功重新加载数据列表
+        this.loadArticles()
+      } catch (err) {
+        if (err === 'cancel') {
+          return this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        }
+        this.$message.error('删除失败')
+      }
     }
   }
 }
