@@ -33,7 +33,9 @@
 
               <el-form-item label="时间">
                  <el-date-picker
-                    v-model="filterParams.begin_pubdate"
+                    value-format="yyyy-MM-dd"
+                    v-model="range_date"
+                    @change="handleDateChange"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -41,7 +43,7 @@
                 </el-date-picker>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary">查询</el-button>
+                <el-button type="primary" @click="handleFilter">查询</el-button>
               </el-form-item>
           </el-form>
 
@@ -157,6 +159,7 @@ export default {
         begin_pubdate: '', // 开始时间
         end_pubdate: '' // 结束时间
       },
+      range_date: '', // 时间范围绑定值
       channels: [] // 所有的频道,默认是空
     }
   },
@@ -167,6 +170,16 @@ export default {
   },
 
   methods: {
+    // 查询函数
+    handleFilter () {
+
+    },
+    // 日期选择函数
+    handleDateChange (value) {
+      this.filterParams.begin_pubdate = value[0]
+      this.filterParams.end_pubdate = value[1]
+    },
+    // 获取频道函数
     async loadChannels () {
       try {
         const data = await this.$http({
@@ -179,6 +192,7 @@ export default {
         this.$message.error('获取频道数据失败')
       }
     },
+    // 页面获取函数
     async loadArticles () {
       // 请求开始，加载 loading
       this.articleLoading = true
@@ -198,7 +212,7 @@ export default {
       // 请求结束, 停止loading
       this.articleLoading = false
     },
-
+    // 页面改变加载函数
     handleCurrentChange (page) {
       // console.log(page) 将数据中页码修改为当前最新的页码
       this.page = page
