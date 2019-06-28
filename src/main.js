@@ -19,8 +19,10 @@ import { getUser, removeUser } from '@/utils/auth'
 
 // 配置axios 的基础路径
 // 直接请求登录的时候 直接axios({url:/.......})
-// axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0'
-axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0'
+// 线上连接
+axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0'
+// 本地连接
+// axios.defaults.baseURL = 'http://toutiao.course.itcast.cn/mp/v1_0'
 
 /**
  * Axios 请求拦截器：axios 发出去的请求会先经过这里
