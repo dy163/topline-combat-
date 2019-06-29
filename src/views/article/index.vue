@@ -21,14 +21,7 @@
               </el-form-item>
 
               <el-form-item label="频道">
-                <el-select v-model="filterParams.channel_id" clearable>
-                  <el-option
-                  v-for="item in channels"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"></el-option>
-
-                </el-select>
+                <article-channel v-model="filterParams.channel_id"></article-channel>
               </el-form-item>
 
               <el-form-item label="时间">
@@ -55,7 +48,6 @@
         <el-card class="box-card">
             <div slot="header" class="clearfix">
                 <span>一共有<strong>{{ totalCount }}</strong>条数据</span>
-                <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
              </div>
             <el-table
                 class="article-list"
@@ -123,10 +115,13 @@
 
 <script>
 
-// import {getUser} from '@/utils/auth'
+import ArticleChannel from '@/components/article-channel'
 
 export default {
   name: 'ArticleList',
+  components: {
+    ArticleChannel
+  },
   data () {
     return {
       articles: [],
@@ -164,14 +159,14 @@ export default {
         begin_pubdate: '', // 开始时间
         end_pubdate: '' // 结束时间
       },
-      range_date: '', // 时间范围绑定值
-      channels: [] // 所有的频道,默认是空
+      range_date: '' // 时间范围绑定值
+      // channels: [] // 所有的频道,默认是空  自定义组件的使用后的结果去掉
     }
   },
 
   created () {
     this.loadArticles()
-    this.loadChannels()
+    // this.loadChannels()   组件中已经加载不用在一次加载了
   },
 
   methods: {
@@ -186,19 +181,21 @@ export default {
       this.filterParams.begin_pubdate = value[0]
       this.filterParams.end_pubdate = value[1]
     },
-    // 获取频道函数
-    async loadChannels () {
-      try {
-        const data = await this.$http({
-          method: 'GET',
-          url: '/channels'
 
-        })
-        this.channels = data.channels
-      } catch (error) {
-        this.$message.error('获取频道数据失败')
-      }
-    },
+    // // 获取频道函数
+    // async loadChannels () {
+    //   try {
+    //     const data = await this.$http({
+    //       method: 'GET',
+    //       url: '/channels'
+
+    //     })
+    //     this.channels = data.channels
+    //   } catch (error) {
+    //     this.$message.error('获取频道数据失败')
+    //   }
+    // },
+
     // 页面获取函数
     async loadArticles () {
       // 请求开始，加载 loading
@@ -222,7 +219,7 @@ export default {
           ...filterData // 将 filterData 混入到当前对象中
         }
       })
-      console.log(data)
+      // console.log(data)
       this.articles = data.results
       this.totalCount = data.total_count
       // 请求结束, 停止loading

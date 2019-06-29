@@ -28,7 +28,7 @@ axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0'
 /**
  *
  */
-axios.defaults.ransformResponse = [function (data) {
+axios.defaults.transformResponse = [function (data) {
   // return data
   try {
     return JSONbig.parse(data)
