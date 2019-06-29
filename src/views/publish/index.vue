@@ -8,13 +8,20 @@
       </div>
     </div>
     <el-row>
-      <el-col :span="10">
+      <el-col :span="21">
         <el-form ref="form" :model="articleForm" label-width="80px">
           <el-form-item label="标题">
             <el-input v-model="articleForm.title"></el-input>
           </el-form-item>
           <el-form-item label="内容">
-            <el-input type="textarea" v-model="articleForm.content"></el-input>
+            <!-- bidirectional data binding（双向数据绑定） -->
+            <quill-editor v-model="articleForm.content"
+              ref="myQuillEditor"
+              :options="editorOption"
+              @blur="onEditorBlur($event)"
+              @focus="onEditorFocus($event)"
+              @ready="onEditorReady($event)">
+            </quill-editor>
           </el-form-item>
           <el-form-item label="封面">
           </el-form-item>
@@ -32,10 +39,18 @@
 
 <script>
 import AtricleChannel from '@/components/article-channel'
+// 富文本的三哥组件
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+import { quillEditor } from 'vue-quill-editor'
+
 export default {
   name: 'AppPublish',
   components: {
-    AtricleChannel
+    AtricleChannel,
+    quillEditor
   },
   data () {
     return {
@@ -47,11 +62,15 @@ export default {
           type: 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
           images: []
         }
-      }
+      },
+      editorOption: {}// 富文本编剧器配置选项
     }
   },
 
   methods: {
+    async onEditorBlur () {},
+    async onEditorFocus () {},
+    async onEditorReady () {},
     async handlePublish (draft) {
       try {
         await this.$http({
