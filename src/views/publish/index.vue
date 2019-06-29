@@ -67,26 +67,62 @@ export default {
     }
   },
 
+  created () {
+    if (this.$route.name === 'publish-edit') {
+      this.loadArticle()
+    }
+  },
+
   methods: {
     async onEditorBlur () {},
     async onEditorFocus () {},
     async onEditorReady () {},
+
+    async loadArticle () {
+      try {
+        const data = await this.$http({
+          method: 'GET',
+          url: `/articles/${this.$route.params.id}`
+        })
+        this.articleForm = data
+      } catch (err) {
+        this.$message.error('获取文章修改失败')
+      }
+    },
+
     async handlePublish (draft) {
       try {
-        await this.$http({
-          method: 'POST',
-          url: '/articles',
-          params: {
-            draft
-          },
-          data: this.articleForm
-        })
-        this.$message({
-          type: 'success',
-          message: '发布成功'
-        })
+        if (this.$route.name === 'publish') {
+          await this.$http({
+            method: 'POST',
+            url: '/articles',
+            params: {
+              draft
+            },
+            data: this.articleForm
+          })
+          this.$message({
+            type: 'success',
+            message: '发布成功'
+          })
+        } else {
+          await this.$http({
+            method: 'PUT',
+            url: `/articles/${this.$route.params.id}`,
+            params: {
+              draft
+            },
+            data: this.articleForm
+          })
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+          // this.$router.push({path: 'article'})
+          //  this.router.push('/article')
+        }
       } catch (err) {
-        this.$message.error('发布失败', err)
+        this.$message.error('操作有误,返回重新操作', err)
       }
     }
   }
