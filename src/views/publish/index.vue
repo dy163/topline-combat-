@@ -118,8 +118,7 @@ export default {
             type: 'success',
             message: '修改成功'
           })
-          // this.$router.push({path: 'article'})
-          //  this.router.push('/article')
+          // router.replace('/article')
         }
       } catch (err) {
         this.$message.error('操作有误,返回重新操作', err)
