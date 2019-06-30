@@ -4,8 +4,8 @@
     <el-col :span="5" :offset="9">
       <el-dropdown>
         <span class="el-dropdown-link">
-          <img width="30px" :src="userInfo.photo">
-          {{ userInfo.name }}
+          <img width="30px" :src="$store.state.user.photo">
+          {{ $store.state.user.name }}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -18,17 +18,17 @@
 </template>
 
 <script>
-import { removeUser, getUser } from '@/utils/auth.js'
+import { removeUser } from '@/utils/auth.js'
 export default {
   name: 'AppHeader',
   data () {
     return {
-      userInfo: {}
+      // userInfo: {}
     }
   },
   created () {
     // this.userInfo = JSON.parse(window.localStorage.getItem('user_info'))
-    this.userInfo = getUser()
+    // this.userInfo = getUser()
   },
   methods: {
     handleLayout () {

@@ -18,6 +18,8 @@ import './styles/index.less'
 import { getUser, removeUser } from '@/utils/auth'
 import JSONbig from 'json-bigint'
 
+import store from './store'
+
 // 配置axios 的基础路径
 // 直接请求登录的时候 直接axios({url:/.......})
 // 线上连接
@@ -88,5 +90,6 @@ Vue.config.productionTip = false
 
 new Vue({
   router,
+  store, // 将store配置到vue的跟实例中
   render: h => h(App)
 }).$mount('#app')

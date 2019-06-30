@@ -87,7 +87,7 @@ export default {
     async handleSave () {
       try {
         const { name, intro, email } = this.user
-        await this.$http({
+        const data = await this.$http({
           method: 'PATCH',
           url: '/user/profile',
           data: {
@@ -100,6 +100,8 @@ export default {
           type: 'success',
           message: '保存数据成功'
         })
+        // 调用vuex的中的数据
+        this.$store.commit('changeUser', data)
       } catch (err) {
         this.$message.error('保存账户信息失败')
       }
@@ -116,6 +118,7 @@ export default {
           data: formData
         })
         this.user.photo = data.photo
+        this.$store.commit('changeUser', this.user)
         this.$message({
           type: 'success',
           message: '上传头像成功'
