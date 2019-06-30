@@ -107,6 +107,8 @@ export default {
 
         // window.localStorage.setItem('user_info', JSON.stringify(userInfo))
         saveUser(userInfo) // 直接调这个方法
+        // 重新加载 userInfo
+        this.$store.commit('changeUser', userInfo)
 
         this.$message({
           message: '登录成功',

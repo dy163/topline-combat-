@@ -119,6 +119,7 @@ export default {
         })
         this.user.photo = data.photo
         this.$store.commit('changeUser', this.user)
+        // this.$store.commit('changeUser', userInfo) 从新加载userInfo
         this.$message({
           type: 'success',
           message: '上传头像成功'
