@@ -13,7 +13,7 @@
         </el-header>
         <el-main>
           <!-- 发布文章和文章列表在这里显示内容 -->
-          <router-view></router-view>
+          <router-view/>
         </el-main>
       </el-container>
     </el-container>

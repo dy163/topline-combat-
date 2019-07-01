@@ -66,7 +66,28 @@ export default {
       editorOption: {}// 富文本编剧器配置选项
     }
   },
-
+  /**
+   * 监视
+   * 可以监视实例中的数据成员,当监视的数据发生变化的时候就会处理函数
+   */
+  watch: {
+    '$route' (to, from) {
+      /**
+       * 对路由变化做出响应
+       */
+      if (from.name === 'publish-edit') {
+        this.articleForm = {
+          title: '', // 标题
+          content: '', // 内容
+          channel_id: '', // 频道
+          cover: { // 封面
+            type: 0, // 封面类型 -1:自动，0-无图，1-1张，3-3张
+            images: []
+          }
+        }
+      }
+    }
+  },
   created () {
     if (this.$route.name === 'publish-edit') {
       this.loadArticle()
