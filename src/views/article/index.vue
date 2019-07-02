@@ -61,7 +61,7 @@
                             <img
                             width="20"
                             v-for="item in scope.row.cover.images"
-                            :key="item"
+                            :key="item + Math.random()"
                             :src="item">
                         </template>
                     </el-table-column>
@@ -202,32 +202,36 @@ export default {
 
     // 页面获取函数
     async loadArticles () {
-      // 请求开始，加载 loading
-      this.articleLoading = true
-      // 除了登录的相关接口,其他接口必须在请求头中通过 Authorization 字段提供用户的 token 令牌
-      // 当我们登录成功后,服务端会生成一个token令牌,放到用户的信息中
-      const filterData = {}
-      for (let key in this.filterParams) {
-        const item = this.filterParams[key]
-        // 数据中有0 参与查询运算后就是 false
-        if (item !== null && item !== undefined && item !== '') {
-          filterData[key] = item
+      try {
+        // 请求开始，加载 loading
+        this.articleLoading = true
+        // 除了登录的相关接口,其他接口必须在请求头中通过 Authorization 字段提供用户的 token 令牌
+        // 当我们登录成功后,服务端会生成一个token令牌,放到用户的信息中
+        const filterData = {}
+        for (let key in this.filterParams) {
+          const item = this.filterParams[key]
+          // 数据中有0 参与查询运算后就是 false
+          if (item !== null && item !== undefined && item !== '') {
+            filterData[key] = item
+          }
         }
+        const data = await this.$http({
+          method: 'GET',
+          url: '/articles',
+          params: {
+            page: this.page, // 页码
+            per_page: this.pageSize, // 每页多少
+            ...filterData // 将 filterData 混入到当前对象中
+          }
+        })
+        // console.log(data)
+        this.articles = data.results
+        this.totalCount = data.total_count
+        // 请求结束, 停止loading
+        this.articleLoading = false
+      } catch (err) {
+        this.$message.error('加载文章列表失败')
       }
-      const data = await this.$http({
-        method: 'GET',
-        url: '/articles',
-        params: {
-          page: this.page, // 页码
-          per_page: this.pageSize, // 每页多少
-          ...filterData // 将 filterData 混入到当前对象中
-        }
-      })
-      // console.log(data)
-      this.articles = data.results
-      this.totalCount = data.total_count
-      // 请求结束, 停止loading
-      this.articleLoading = false
     },
     // 页面改变加载函数
     handleCurrentChange (page) {
